@@ -1,6 +1,10 @@
-City API
+# City API
 
-City API is an Express-based REST API that utilizes MongoDB to manage city data. It provides endpoints for searching cities, pagination, sorting, and adding new city entries.
+City API is an Express-based REST API that utilizes MongoDB to manage city data. It provides endpoints for searching cities, pagination, sorting, and adding new city entries. The filtration is case-insensitive.
+
+# Project Architecture:
+
+![SAP_City](https://github.com/GeorgiYankov00/city-ui/assets/62720096/ed413fe6-7531-4a64-a318-09cd6eb6e1c0)
 
 # Getting Started
 Prerequisites
@@ -14,7 +18,7 @@ PORT = 5000
 # Installation
 Clone the repository:
 ```
-git clone https://github.com/GeorgiYankov00/city-ui.git
+git clone https://github.com/GeorgiYankov00/city-api.git
 ```
 
 # Navigate to the project directory:
@@ -36,10 +40,11 @@ Run the API using:
 npm start
 ```
 
-The API will be accessible at http://localhost:3001 by default.
+The API will be accessible at http://localhost:5000 with suggested environment variables.
 
 # API Endpoints
-GET /cities
+
+GET /city
 Search for cities with optional query parameters:
 
 name: Partial or full name of the city for search.
@@ -47,29 +52,31 @@ limit: Number of results per page.
 skip: Number of results to skip for pagination.
 sort: Sort order - 1 for asc and -1 for desc.
 
-# Example GET city by name:
+# Example GET request to filter city by name and sort results by name in ASC order:
 ```
-curl -X GET "http://localhost:3001/city?name=new&sort=name"
+curl -X GET "http://localhost:5000/city?name=new&sort=name"
+```
+# Example GET request to filter city by name and sort results by name in DESC order:
+```
+curl -X GET "http://localhost:5000/city?name=new&sort=-name"
+```
+# Example GET request used for pagination - limits to 10 results and skips the first 20:
+
+```
+curl -X GET "http://localhost:5000/city?limit=10&skip=20"
 ```
 
-POST /cities
+POST /city
 Add a new city to the database. Requires a JSON payload with the following properties:
+* name: A string. City name (required).
+* area: A number. City area (required) .
+* population: A number. City population (required).
 
-name: City name (required).
-area: City area (required).
-population: City population (required).
-density: City density (required).
-Example:
-bash
-Copy code
-curl -X POST -H "Content-Type: application/json" -d '{"name": "New City", "area": 100, "population": 100000, "density": 1000}' "http://localhost:3001/cities"
-Database
+# Example POST 
+
+```
+curl -X POST -H "Content-Type: application/json" -d '{"name": "New City", "area": 100, "population": 100000}' "http://localhost:5000/city"
+```
+
+# Database
 The API uses MongoDB as the database. Make sure your MongoDB instance is running and accessible.
-
-Customization
-Feel free to customize the API to fit your specific requirements. You can modify the database connection settings, add middleware, or extend the functionality as needed.
-
-Learn More
-Explore the Express documentation for more details on building APIs with Express.
-Dive into MongoDB documentation to learn more about MongoDB.
-Feel free to adjust this template to include more details about your project, such as authentication, error handling, or any other specific features your API may have.
