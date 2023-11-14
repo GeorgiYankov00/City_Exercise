@@ -17,6 +17,7 @@ export class CityController {
   async getCities(req: any, res: any): Promise<City[]> {
     const result = await this.cityFetcherService.findAll(req.query);
     res.set("X-Total-Count", result.count);
+    res.append("Access-Control-Expose-Headers", "X-Total-Count");
     return result.documents;
   }
 

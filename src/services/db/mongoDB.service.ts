@@ -1,4 +1,5 @@
 import { CityModel } from "../../model/city";
+import { DuplicateException } from "../../utils/types/DuplicateException";
 import { City, CityFindQueryResponse } from "../../utils/types/City";
 import { QueryOptions } from "../../utils/types/QueryOptions";
 import { DBService } from "./db.service";
@@ -25,7 +26,17 @@ export class MongoDBService implements DBService {
       CityModel.countDocuments(filter),
     ]);
 
-    return { documents, count };
+    const modifiedDocuments: City[] = documents.map((doc) => {
+      return {
+        id: doc._id.toString(),
+        name: doc.name,
+        population: doc.population,
+        area: doc.area,
+        density: doc.density,
+      };
+    });
+
+    return { documents: modifiedDocuments, count };
   }
 
   async save(input: City): Promise<City> {
@@ -34,13 +45,23 @@ export class MongoDBService implements DBService {
     try {
       result = await city.save();
     } catch (err: any) {
+      if (err.message.includes("E11000 duplicate key error")) {
+        throw new DuplicateException("City already exists!");
+      }
       console.error("Unable to save city. Error:", err.message);
+      throw err;
     }
     if (!result) {
       throw Error("Unable to get response from DB. Payload: " + city);
     }
 
-    return result;
+    return {
+      id: result._id.toString(),
+      name: result.name,
+      area: result.area,
+      population: result.population,
+      density: result.density,
+    };
   }
 
   async connect() {
